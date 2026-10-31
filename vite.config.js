@@ -4,5 +4,5 @@ import react from '@vitejs/plugin-react'
 // Passe 'base' an den Namen deines GitHub-Repositories an, z.B. '/medienanalyse/'
 export default defineConfig({
   plugins: [react()],
-  base: '/medienanalyse/',
+  base: '/D_Medienanalyse/',
 })

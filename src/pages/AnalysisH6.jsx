@@ -81,7 +81,7 @@ export default function AnalysisH6({ posts }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
         <ChartCard title="Instagram: C4, D4, E4 pro Anbietertyp"
           chartRef={ref1} filename="h6_instagram">
-          <Bar ref={ref1} data={{
+          <Bar key={theme} ref={ref1} data={{
             labels: typeLabels,
             datasets: [
               { label: 'C4 Clickbait',     data: c4I, backgroundColor: '#e74c3c' },
@@ -93,7 +93,7 @@ export default function AnalysisH6({ posts }) {
 
         <ChartCard title="TikTok: C4, D4, E4 pro Anbietertyp"
           chartRef={ref2} filename="h6_tiktok">
-          <Bar ref={ref2} data={{
+          <Bar key={theme} ref={ref2} data={{
             labels: typeLabels,
             datasets: [
               { label: 'C4 Clickbait',     data: c4T, backgroundColor: '#e74c3c' },
@@ -107,7 +107,7 @@ export default function AnalysisH6({ posts }) {
       <ChartCard title="Spannweite pro Kriterium: Instagram vs. TikTok"
         chartRef={ref3} filename="h6_spannweite"
         readingHelp="Die Spannweite ist der höchste Typ-Mittelwert minus dem tiefsten. Eine kleinere Spannweite auf TikTok bedeutet, dass die Typen ähnlicher bewertet wurden → spricht für H6.">
-        <Bar ref={ref3} data={{
+        <Bar key={theme} ref={ref3} data={{
           labels: CRITERIA.map(c => c.label),
           datasets: [
             { label: 'Instagram', data: spanData.map(d => d.instagram !== null ? +d.instagram.toFixed(2) : null), backgroundColor: PLT_COLORS.instagram },

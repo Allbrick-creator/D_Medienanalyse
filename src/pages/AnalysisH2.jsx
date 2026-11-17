@@ -65,7 +65,7 @@ export default function AnalysisH2({ posts }) {
       <ChartCard title="Ø Objektivitätsskala (D4) pro Anbietertyp"
         n={filtered.filter(p => p.d4 != null).length} chartRef={ref1} filename="h2_d4_typ"
         readingHelp="D4-Skala: 1 = einseitig und wertend bis 4 = neutral, ausgewogen, belegt. Höhere Werte sprechen für H2.">
-        <Bar ref={ref1} data={{
+        <Bar key={theme} ref={ref1} data={{
           labels: typeLabels,
           datasets: [{ label: 'Ø D4', data: d4ByType, backgroundColor: typeColors, borderWidth: 0 }],
         }} options={opts14} />
@@ -74,7 +74,7 @@ export default function AnalysisH2({ posts }) {
       <ChartCard title="Ø Objektivitätsskala (D4) pro Anbieter"
         n={filtered.filter(p => p.d4 != null).length} chartRef={ref2} filename="h2_d4_anbieter"
         readingHelp="Gleiche Skala, aufgeteilt auf die 7 Anbieter.">
-        <Bar ref={ref2} data={{
+        <Bar key={theme} ref={ref2} data={{
           labels: PROVIDERS_ORDER,
           datasets: [{ label: 'Ø D4', data: d4ByProv, backgroundColor: provColors, borderWidth: 0 }],
         }} options={opts2} />
@@ -84,7 +84,7 @@ export default function AnalysisH2({ posts }) {
         n={filtered.length} chartRef={ref3} filename="h2_d1d2d3_typ"
         note={`D2 (wertende Formulierungen): Ein niedriger Wert ist hier sachlicher. – D3 «nicht relevant» ausgeschlossen: Boulevard ${d3n[0]}, Öffentlich-rechtlich ${d3n[1]}, Qualität ${d3n[2]} Beiträge.`}
         readingHelp="D1 = Quelle genannt (höher = sachlicher). D2 = wertende Formulierungen (niedriger = sachlicher!). D3 = Gegenseite zu Wort kommen lassen (höher = sachlicher).">
-        <Bar ref={ref3} data={{
+        <Bar key={theme} ref={ref3} data={{
           labels: typeLabels,
           datasets: [
             { label: 'D1 Quelle genannt',        data: d1, backgroundColor: '#27ae60' },

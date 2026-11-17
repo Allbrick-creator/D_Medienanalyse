@@ -99,7 +99,7 @@ export default function AnalysisH3({ posts }) {
           {TYPES.map((t, i) => (
             <div key={t} style={{ textAlign: 'center' }}>
               <div style={{ fontWeight: 600, marginBottom: 8, fontSize: '.85rem' }}>{TYPE_LABELS[t]}</div>
-              <Pie ref={typeRefs1[i]} data={{
+              <Pie key={theme + '_' + t} ref={typeRefs1[i]} data={{
                 labels: ['Hard News', 'Soft News'],
                 datasets: [{ data: [hardPct[i], softPct[i]], backgroundColor: ['#2563eb', '#e74c3c'] }],
               }} options={pOpts} />
@@ -125,7 +125,7 @@ export default function AnalysisH3({ posts }) {
           {TYPES.map((t, i) => (
             <div key={t} style={{ textAlign: 'center' }}>
               <div style={{ fontWeight: 600, marginBottom: 8, fontSize: '.85rem' }}>{TYPE_LABELS[t]}</div>
-              <Pie ref={typeRefs2[i]} data={{
+              <Pie key={theme + '_' + t} ref={typeRefs2[i]} data={{
                 labels: ALL_TOPICS,
                 datasets: [{ data: topicsByType[i], backgroundColor: ALL_TOPICS.map(tp => TOPIC_COLORS[tp] ?? '#aaa') }],
               }} options={pOpts} />
@@ -158,7 +158,7 @@ export default function AnalysisH3({ posts }) {
             {PROVIDERS_ORDER.map((n, i) => (
               <div key={n} style={{ textAlign: 'center' }}>
                 <div style={{ fontWeight: 600, marginBottom: 8, fontSize: '.82rem' }}>{n}</div>
-                <Pie ref={provRefs[i]} data={{
+                <Pie key={theme + '_' + n} ref={provRefs[i]} data={{
                   labels: ALL_TOPICS,
                   datasets: [{ data: topicsByProv[i], backgroundColor: ALL_TOPICS.map(tp => TOPIC_COLORS[tp] ?? '#aaa') }],
                 }} options={pOpts} />

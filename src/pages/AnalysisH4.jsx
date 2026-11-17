@@ -91,13 +91,13 @@ export default function AnalysisH4({ posts }) {
       <ChartCard title="Streudiagramm: Emotionalisierung (E4) vs. W-Fragen-Wert"
         n={valid.length} chartRef={ref1} filename="h4_scatter"
         readingHelp="Jeder Punkt ist ein Beitrag. E4=1 = stark emotional, E4=4 = nüchtern. Wenn Punkte bei höherem E4 tendenziell höher liegen (mehr Information), spricht das für H4. Leichter Jitter verhindert Überlappung.">
-        <Scatter ref={ref1} data={{ datasets: scatterDatasets }} options={opts1} />
+        <Scatter key={theme} ref={ref1} data={{ datasets: scatterDatasets }} options={opts1} />
       </ChartCard>
 
       <ChartCard title="Ø W-Fragen-Wert pro Emotionalisierungsstufe (E4)"
         chartRef={ref2} filename="h4_wfragen_e4stufe"
         readingHelp={`Steigende Balken von Stufe 1 → 4 sprechen für H4 (Stufe 1=stark emotional, Stufe 4=nüchtern). n pro Stufe: 1=${e4Means[0].n}, 2=${e4Means[1].n}, 3=${e4Means[2].n}, 4=${e4Means[3].n}.`}>
-        <Bar ref={ref2} data={{
+        <Bar key={theme} ref={ref2} data={{
           labels: e4Labels.map((l, i) => `Stufe ${l} (n=${e4Means[i].n})`),
           datasets: [{
             label: 'Ø W-Fragen-Wert',

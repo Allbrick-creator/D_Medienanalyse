@@ -83,7 +83,7 @@ export default function AnalysisH5({ posts }) {
         chartRef={ref1} filename="h5_c4e4_gesamt"
         note={!exclusive ? 'Beiträge mit «beide» verkleinern den Unterschied, da sie für beide Plattformen identisch gezählt werden. Für einen klaren Vergleich → «Nur exklusive Beiträge».' : undefined}
         readingHelp="C4 = Clickbait-Skala, E4 = Emotionalisierungsskala (je 1–4; 1=stark, 4=schwach). Spricht für H5, wenn TikTok bei beiden Werten niedriger liegt.">
-        <Bar ref={ref1} data={{
+        <Bar key={theme} ref={ref1} data={{
           labels: ['C4 – Clickbait', 'E4 – Emotionalisierung'],
           datasets: [
             { label: 'Instagram', data: [c4Gesamt[0], e4Gesamt[0]], backgroundColor: PLT_COLORS.instagram },
@@ -95,7 +95,7 @@ export default function AnalysisH5({ posts }) {
       <ChartCard title="Ø C4 pro Anbietertyp: Instagram vs. TikTok"
         n={nInsta + nTikTok} chartRef={ref2} filename="h5_c4_typ"
         readingHelp="Vergleich pro Anbietertyp. Ein TikTok-Balken niedriger als Instagram-Balken spricht pro Typ für H5 (niedrigere Werte = mehr Clickbait/Emotionalisierung).">
-        <Bar ref={ref2} data={{
+        <Bar key={theme} ref={ref2} data={{
           labels: typeLabels,
           datasets: [
             { label: 'Instagram C4', data: c4ByTypeInsta,  backgroundColor: PLT_COLORS.instagram },
@@ -109,7 +109,7 @@ export default function AnalysisH5({ posts }) {
       <ChartCard title="Anteil Crossposting («beide») pro Anbieter"
         n={posts.length} chartRef={ref3} filename="h5_beide_anbieter"
         readingHelp="Wie viel Prozent der Beiträge wurden für beide Plattformen gleich erfasst? Ein hoher Anteil «beide» verkleinert den Plattformunterschied in den obigen Diagrammen.">
-        <Bar ref={ref3} data={{
+        <Bar key={theme} ref={ref3} data={{
           labels: PROVIDERS_ORDER,
           datasets: [{ label: 'Anteil «beide» (%)', data: bothPct, backgroundColor: bothColors, borderWidth: 0 }],
         }} options={opts3} />

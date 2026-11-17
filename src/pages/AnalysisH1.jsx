@@ -62,7 +62,7 @@ export default function AnalysisH1({ posts }) {
       <ChartCard title="Ø Clickbait-Skala (C4) pro Anbietertyp"
         n={filtered.filter(p => p.c4 != null).length} chartRef={ref1} filename="h1_c4_typ"
         readingHelp="C4-Skala: 1 = reisserisch (viel Clickbait) bis 4 = sachlich-informativer Titel. Je höher der Balken, desto weniger Clickbait.">
-        <Bar ref={ref1} data={{
+        <Bar key={theme} ref={ref1} data={{
           labels: typeLabels,
           datasets: [{ label: 'Ø C4', data: c4ByType, backgroundColor: typeColors, borderWidth: 0 }],
         }} options={opts1} />
@@ -71,7 +71,7 @@ export default function AnalysisH1({ posts }) {
       <ChartCard title="Ø Clickbait-Skala (C4) pro Anbieter"
         n={filtered.filter(p => p.c4 != null).length} chartRef={ref2} filename="h1_c4_anbieter"
         readingHelp="Gleiche Skala wie oben (1 = reisserisch, 4 = sachlich), aufgeteilt nach den 7 Anbietern. Farben entsprechen dem Anbietertyp.">
-        <Bar ref={ref2} data={{
+        <Bar key={theme} ref={ref2} data={{
           labels: PROVIDERS_ORDER,
           datasets: [{ label: 'Ø C4', data: c4ByProv, backgroundColor: provColors, borderWidth: 0 }],
         }} options={opts2} />
@@ -80,7 +80,7 @@ export default function AnalysisH1({ posts }) {
       <ChartCard title="Anteil Clickbait-Merkmale (C1–C3) pro Anbietertyp"
         n={filtered.length} chartRef={ref3} filename="h1_c1c2c3_typ"
         readingHelp="C1 = Neugierlücke, C2 = Superlative/Übertreibungen, C3 = Grossbuchstaben/Ausrufezeichen/Emojis. Je höher der Balken, desto häufiger wurde das Merkmal als vorhanden bewertet.">
-        <Bar ref={ref3} data={{
+        <Bar key={theme} ref={ref3} data={{
           labels: typeLabels,
           datasets: [
             { label: 'C1 Neugierlücke',    data: c1, backgroundColor: '#e74c3c' },

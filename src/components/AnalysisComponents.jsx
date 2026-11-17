@@ -62,27 +62,32 @@ function buildExportCanvas(title, n, note, readingHelp, drawMain) {
   totalH += PAD
 
   // --- draw phase ---
+  const cs = getComputedStyle(document.documentElement)
+  const bgColor    = cs.getPropertyValue('--surface').trim()    || '#ffffff'
+  const textColor  = cs.getPropertyValue('--text').trim()       || '#111111'
+  const mutedColor = cs.getPropertyValue('--text-muted').trim() || '#888888'
+
   const c = document.createElement('canvas')
   c.width = Math.round(totalW * OUTPUT_DPR)
   c.height = Math.round(totalH * OUTPUT_DPR)
   const ctx = c.getContext('2d')
   ctx.scale(OUTPUT_DPR, OUTPUT_DPR)
 
-  ctx.fillStyle = '#ffffff'
+  ctx.fillStyle = bgColor
   ctx.fillRect(0, 0, totalW, totalH)
 
   let y = PAD + 15
-  ctx.font = `bold 15px ${FONT}`; ctx.fillStyle = '#111111'
+  ctx.font = `bold 15px ${FONT}`; ctx.fillStyle = textColor
   ctx.fillText(title, PAD, y); y += 22
 
   if (n !== undefined) {
-    ctx.font = `12px ${FONT}`; ctx.fillStyle = '#888888'
+    ctx.font = `12px ${FONT}`; ctx.fillStyle = mutedColor
     ctx.fillText(`n = ${n}`, PAD, y); y += 18
   }
 
   if (note) {
     y += 8
-    ctx.font = `11px ${FONT}`; ctx.fillStyle = '#555555'
+    ctx.font = `11px ${FONT}`; ctx.fillStyle = textColor
     y = drawTextWrapped(ctx, note, PAD, y, textW, 15)
     y += 8
   }
@@ -93,7 +98,7 @@ function buildExportCanvas(title, n, note, readingHelp, drawMain) {
 
   if (readingHelp) {
     y += 12
-    ctx.font = `italic 11px ${FONT}`; ctx.fillStyle = '#999999'
+    ctx.font = `italic 11px ${FONT}`; ctx.fillStyle = mutedColor
     drawTextWrapped(ctx, readingHelp, PAD, y, textW, 15)
   }
 
@@ -128,6 +133,7 @@ export function downloadPieGroup({ canvases, labels, title, n, readingHelp, file
     width: innerW,
     height: innerH,
     fn: (ctx, ox, oy) => {
+      const pieLabelColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#111111'
       let y = oy
       for (let row = 0; row < rows; row++) {
         const start = row * perRow
@@ -137,7 +143,7 @@ export function downloadPieGroup({ canvases, labels, title, n, readingHelp, file
         for (let col = 0; col < count; col++) {
           const idx = start + col
           const x = rx + col * (pieW + GAP)
-          ctx.font = `bold 12px ${EXPORT_FONT}`; ctx.fillStyle = '#111111'
+          ctx.font = `bold 12px ${EXPORT_FONT}`; ctx.fillStyle = pieLabelColor
           ctx.textAlign = 'center'
           ctx.fillText(labels[idx] ?? '', x + pieW / 2, y + 14)
           ctx.drawImage(valid[idx], 0, 0, valid[idx].width, valid[idx].height, x, y + LABEL_H, pieW, pieH)

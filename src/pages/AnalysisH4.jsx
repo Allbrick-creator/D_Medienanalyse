@@ -44,7 +44,7 @@ export default function AnalysisH4({ posts }) {
     return { v: mean(sub.map(p => +p.f_score)), n: sub.length }
   })
 
-  const opts1 = useMemo(() => scatterOptions({ xLabel: 'E4 (Emotionalisierung 1–4)', yLabel: 'W-Fragen-Wert (0–6)' }), [theme])
+  const opts1 = useMemo(() => scatterOptions({ xLabel: 'E4 (1=stark emotional, 4=nüchtern)', yLabel: 'W-Fragen-Wert (0–6)' }), [theme])
   const opts2 = useMemo(() => ({ ...barOptions({ yMin: 0, yMax: 6, yLabel: 'Ø W-Fragen-Wert (0–6)' }),
     plugins: { ...barOptions().plugins, legend: { display: false },
       tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
@@ -90,13 +90,13 @@ export default function AnalysisH4({ posts }) {
 
       <ChartCard title="Streudiagramm: Emotionalisierung (E4) vs. W-Fragen-Wert"
         n={valid.length} chartRef={ref1} filename="h4_scatter"
-        readingHelp="Jeder Punkt ist ein Beitrag. Wenn Punkte bei höherem E4 tendenziell tiefer liegen, spricht das für H4. Leichter Jitter verhindert Überlappung.">
+        readingHelp="Jeder Punkt ist ein Beitrag. E4=1 = stark emotional, E4=4 = nüchtern. Wenn Punkte bei höherem E4 tendenziell höher liegen (mehr Information), spricht das für H4. Leichter Jitter verhindert Überlappung.">
         <Scatter ref={ref1} data={{ datasets: scatterDatasets }} options={opts1} />
       </ChartCard>
 
       <ChartCard title="Ø W-Fragen-Wert pro Emotionalisierungsstufe (E4)"
         chartRef={ref2} filename="h4_wfragen_e4stufe"
-        readingHelp={`Fallende Balken von Stufe 1 → 4 sprechen für H4. n pro Stufe: 1=${e4Means[0].n}, 2=${e4Means[1].n}, 3=${e4Means[2].n}, 4=${e4Means[3].n}.`}>
+        readingHelp={`Steigende Balken von Stufe 1 → 4 sprechen für H4 (Stufe 1=stark emotional, Stufe 4=nüchtern). n pro Stufe: 1=${e4Means[0].n}, 2=${e4Means[1].n}, 3=${e4Means[2].n}, 4=${e4Means[3].n}.`}>
         <Bar ref={ref2} data={{
           labels: e4Labels.map((l, i) => `Stufe ${l} (n=${e4Means[i].n})`),
           datasets: [{

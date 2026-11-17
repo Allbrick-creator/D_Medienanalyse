@@ -16,13 +16,155 @@ export function PlatformFilter({ value, onChange }) {
   )
 }
 
-// Diagramm-Karte mit Titel, n, Download-Button, Lesehilfe
-export function ChartCard({ title, n, chartRef, filename = 'diagramm', readingHelp, note, children }) {
-  function download() {
-    const url = chartRef?.current?.toBase64Image?.('image/png', 1)
-    if (!url) return
+const EXPORT_FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+
+function wrapTextLines(ctx, text, maxW) {
+  const words = text.split(' ')
+  const lines = []
+  let line = ''
+  for (const word of words) {
+    const test = line + word + ' '
+    if (ctx.measureText(test).width > maxW && line) { lines.push(line.trim()); line = word + ' ' }
+    else line = test
+  }
+  if (line.trim()) lines.push(line.trim())
+  return lines
+}
+
+function drawTextWrapped(ctx, text, x, y, maxW, lineH) {
+  for (const l of wrapTextLines(ctx, text, maxW)) { ctx.fillText(l, x, y); y += lineH }
+  return y
+}
+
+function buildExportCanvas(title, n, note, readingHelp, drawMain) {
+  const PAD = 24
+  const FONT = EXPORT_FONT
+  const OUTPUT_DPR = 2
+
+  // --- measure phase ---
+  const tmp = document.createElement('canvas')
+  const tmx = tmp.getContext('2d')
+  const totalW = drawMain.width + PAD * 2
+  const textW = totalW - PAD * 2
+
+  function mH(text, fs, lh) {
+    tmx.font = `${fs}px ${FONT}`
+    return wrapTextLines(tmx, text, textW).length * lh
+  }
+
+  let totalH = PAD + 20  // title
+  if (n !== undefined) totalH += 18
+  if (note) { totalH += 8 + mH(note, 11, 15) + 8 }
+  totalH += 14
+  const mainTop = totalH
+  totalH += drawMain.height
+  if (readingHelp) { totalH += 12 + mH(readingHelp, 11, 15) }
+  totalH += PAD
+
+  // --- draw phase ---
+  const c = document.createElement('canvas')
+  c.width = Math.round(totalW * OUTPUT_DPR)
+  c.height = Math.round(totalH * OUTPUT_DPR)
+  const ctx = c.getContext('2d')
+  ctx.scale(OUTPUT_DPR, OUTPUT_DPR)
+
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, totalW, totalH)
+
+  let y = PAD + 15
+  ctx.font = `bold 15px ${FONT}`; ctx.fillStyle = '#111111'
+  ctx.fillText(title, PAD, y); y += 22
+
+  if (n !== undefined) {
+    ctx.font = `12px ${FONT}`; ctx.fillStyle = '#888888'
+    ctx.fillText(`n = ${n}`, PAD, y); y += 18
+  }
+
+  if (note) {
+    y += 8
+    ctx.font = `11px ${FONT}`; ctx.fillStyle = '#555555'
+    y = drawTextWrapped(ctx, note, PAD, y, textW, 15)
+    y += 8
+  }
+
+  y += 14
+  drawMain.fn(ctx, PAD, y)
+  y += drawMain.height
+
+  if (readingHelp) {
+    y += 12
+    ctx.font = `italic 11px ${FONT}`; ctx.fillStyle = '#999999'
+    drawTextWrapped(ctx, readingHelp, PAD, y, textW, 15)
+  }
+
+  return c
+}
+
+function triggerDownload(canvas, filename) {
+  canvas.toBlob(blob => {
+    const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url; a.download = `${filename}.png`; a.click()
+    URL.revokeObjectURL(url)
+  }, 'image/png')
+}
+
+// Hilfsfunktion für mehrere Kreisdiagramme nebeneinander
+export function downloadPieGroup({ canvases, labels, title, n, readingHelp, filename }) {
+  const valid = canvases.filter(Boolean)
+  if (!valid.length) return
+
+  const dpr = window.devicePixelRatio || 1
+  const pieW = valid[0].width / dpr
+  const pieH = valid[0].height / dpr
+  const GAP = 20
+  const LABEL_H = 20
+  const perRow = Math.min(valid.length, 4)
+  const rows = Math.ceil(valid.length / perRow)
+  const innerW = perRow * pieW + (perRow - 1) * GAP
+  const innerH = rows * (LABEL_H + pieH) + (rows - 1) * GAP
+
+  const drawMain = {
+    width: innerW,
+    height: innerH,
+    fn: (ctx, ox, oy) => {
+      let y = oy
+      for (let row = 0; row < rows; row++) {
+        const start = row * perRow
+        const count = Math.min(perRow, valid.length - start)
+        const rowW = count * pieW + (count - 1) * GAP
+        const rx = ox + (innerW - rowW) / 2
+        for (let col = 0; col < count; col++) {
+          const idx = start + col
+          const x = rx + col * (pieW + GAP)
+          ctx.font = `bold 12px ${EXPORT_FONT}`; ctx.fillStyle = '#111111'
+          ctx.textAlign = 'center'
+          ctx.fillText(labels[idx] ?? '', x + pieW / 2, y + 14)
+          ctx.drawImage(valid[idx], 0, 0, valid[idx].width, valid[idx].height, x, y + LABEL_H, pieW, pieH)
+        }
+        y += LABEL_H + pieH + GAP
+      }
+      ctx.textAlign = 'left'
+    },
+  }
+
+  triggerDownload(buildExportCanvas(title, n, null, readingHelp, drawMain), filename)
+}
+
+// Diagramm-Karte mit Titel, n, Download-Button, Lesehilfe
+export function ChartCard({ title, n, chartRef, filename = 'diagramm', readingHelp, note, children, onDownload }) {
+  function download() {
+    if (onDownload) { onDownload(); return }
+    const chartCanvas = chartRef?.current?.canvas
+    if (!chartCanvas) return
+    const dpr = window.devicePixelRatio || 1
+    const cW = chartCanvas.width / dpr
+    const cH = chartCanvas.height / dpr
+    const drawMain = {
+      width: cW, height: cH,
+      fn: (ctx, x, y) => ctx.drawImage(chartCanvas, 0, 0, chartCanvas.width, chartCanvas.height, x, y, cW, cH),
+    }
+    triggerDownload(buildExportCanvas(title, n, note, readingHelp, drawMain), filename)
   }
   return (
     <div className="card" style={{ padding: 20, marginBottom: 20 }}>
@@ -31,7 +173,7 @@ export function ChartCard({ title, n, chartRef, filename = 'diagramm', readingHe
           <h3 style={{ margin: 0 }}>{title}</h3>
           {n !== undefined && <span className="text-muted" style={{ fontSize: '.8rem' }}>n = {n}</span>}
         </div>
-        {chartRef && (
+        {(chartRef || onDownload) && (
           <button className="btn btn-ghost btn-sm" onClick={download} title="Als PNG herunterladen"
             style={{ flexShrink: 0 }}>
             ↓ PNG

@@ -3,6 +3,7 @@ import {
   CategoryScale, LinearScale,
   BarElement, BarController,
   PointElement, LineElement, ScatterController,
+  ArcElement, PieController,
   Title, Tooltip, Legend,
 } from 'chart.js'
 
@@ -10,6 +11,7 @@ ChartJS.register(
   CategoryScale, LinearScale,
   BarElement, BarController,
   PointElement, LineElement, ScatterController,
+  ArcElement, PieController,
   Title, Tooltip, Legend,
 )
 
@@ -51,6 +53,24 @@ export function barOptions({ yMax, yMin = 0, yLabel = '', title = '', stacked = 
         ticks: { color: c.text, font: { size: 11 }, callback: yMax === 100 ? v => v + ' %' : undefined },
         grid:  { color: c.grid },
         title: { display: !!yLabel, text: yLabel, color: c.muted, font: { size: 11 } },
+      },
+    },
+  }
+}
+
+// Basisoptionen für Kreisdiagramme
+export function pieOptions() {
+  const c = getChartColors()
+  return {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: c.text, font: { size: 10 }, boxWidth: 10, padding: 6 },
+      },
+      tooltip: {
+        callbacks: { label: ctx => ` ${ctx.label}: ${typeof ctx.parsed === 'number' ? ctx.parsed.toFixed(1) : ctx.parsed} %` },
       },
     },
   }

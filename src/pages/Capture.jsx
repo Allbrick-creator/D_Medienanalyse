@@ -80,10 +80,10 @@ const HARD_NEWS = ['Politik', 'Wirtschaft', 'Gesellschaft', 'Wissenschaft/Umwelt
 const SOFT_NEWS = ['Kriminalität/Unglück', 'Unterhaltung/Promis', 'Human Interest/Kurioses', 'Sport']
 
 const C4_DESC = [
-  'Sachlich-informativer Titel',
-  'Leicht zugespitzt, Inhalt hält das Versprechen',
-  'Deutlich reisserisch, Inhalt hält knapp',
   'Reisserisch, Titel verspricht mehr als der Inhalt',
+  'Deutlich reisserisch, Inhalt hält knapp',
+  'Leicht zugespitzt, Inhalt hält das Versprechen',
+  'Sachlich-informativer Titel',
 ]
 const D4_DESC = [
   'Einseitig und wertend',
@@ -92,10 +92,10 @@ const D4_DESC = [
   'Neutral, ausgewogen, belegt',
 ]
 const E4_DESC = [
-  'Nüchtern',
-  'Einzelne emotionale Elemente',
-  'Deutlich emotional, Fakten noch im Zentrum',
   'Beitrag lebt von Gefühl statt Fakten',
+  'Deutlich emotional, Fakten noch im Zentrum',
+  'Einzelne emotionale Elemente',
+  'Nüchtern',
 ]
 
 // ─── Hauptkomponente ─────────────────────────────────────────

@@ -1,15 +1,14 @@
 import { useState, useRef, useMemo } from 'react'
-import { Bar } from 'react-chartjs-2'
+import { Pie } from 'react-chartjs-2'
 import { useTheme } from '../hooks/useTheme'
 import {
-  TYPES, TYPE_LABELS, TYPE_COLORS, PROVIDERS_ORDER, PROVIDER_TYPE_MAP,
+  TYPES, TYPE_LABELS, PROVIDERS_ORDER,
   HARD_NEWS, SOFT_NEWS, ALL_TOPICS, byType, byProvider, filterPlatform,
 } from '../utils/analysisUtils'
-import { barOptions } from '../utils/chartSetup'
+import { pieOptions } from '../utils/chartSetup'
 import '../utils/chartSetup'
-import { PlatformFilter, ChartCard, InterpretationField } from '../components/AnalysisComponents'
+import { PlatformFilter, ChartCard, InterpretationField, downloadPieGroup } from '../components/AnalysisComponents'
 
-// Farben für die 8 Themen: Hard = Blautöne, Soft = Orange/Rottöne
 const TOPIC_COLORS = {
   'Politik':                        '#1d4ed8',
   'Wirtschaft':                     '#2563eb',
@@ -22,48 +21,51 @@ const TOPIC_COLORS = {
 }
 
 function topicPct(arr, topic) {
-  if (!arr.length) return null
+  if (!arr.length) return 0
   return +(arr.filter(p => p.topic === topic).length / arr.length * 100).toFixed(1)
 }
 
 export default function AnalysisH3({ posts }) {
   const { theme } = useTheme()
-  const [platform, setPlatform]   = useState('all')
-  const [showProv, setShowProv]   = useState(false)
-  const ref1 = useRef(), ref2 = useRef(), ref3 = useRef()
+  const [platform, setPlatform] = useState('all')
+  const [showProv, setShowProv] = useState(false)
+
+  // Refs für Kreisdiagramme (3 Typen + 3 Typen + 7 Anbieter = 13)
+  const tR1a = useRef(null), tR1b = useRef(null), tR1c = useRef(null)
+  const tR2a = useRef(null), tR2b = useRef(null), tR2c = useRef(null)
+  const pRa = useRef(null), pRb = useRef(null), pRc = useRef(null)
+  const pRd = useRef(null), pRe = useRef(null), pRf = useRef(null), pRg = useRef(null)
+  const typeRefs1 = [tR1a, tR1b, tR1c]
+  const typeRefs2 = [tR2a, tR2b, tR2c]
+  const provRefs  = [pRa, pRb, pRc, pRd, pRe, pRf, pRg]
 
   const filtered = useMemo(() => filterPlatform(posts, platform), [posts, platform])
   const groups   = useMemo(() => byType(filtered), [filtered])
   const provGrps = useMemo(() => byProvider(filtered), [filtered])
 
-  const typeLabels = TYPES.map(t => TYPE_LABELS[t])
+  const pOpts = useMemo(() => pieOptions(), [theme])
 
-  // Chart 1: Hard vs. Soft gestapelt 100 %
+  const nTopics = filtered.filter(p => p.topic).length
+
+  // Daten Hard vs. Soft pro Typ
   const hardPct = TYPES.map(t => {
-    const arr = groups[t]; if (!arr.length) return null
+    const arr = groups[t]; if (!arr.length) return 0
     return +(arr.filter(p => HARD_NEWS.includes(p.topic)).length / arr.length * 100).toFixed(1)
   })
   const softPct = TYPES.map(t => {
-    const arr = groups[t]; if (!arr.length) return null
+    const arr = groups[t]; if (!arr.length) return 0
     return +(arr.filter(p => SOFT_NEWS.includes(p.topic)).length / arr.length * 100).toFixed(1)
   })
 
-  // Chart 2: alle 8 Themen gestapelt 100 % pro Typ
-  const topicDatasets = ALL_TOPICS.map(topic => ({
-    label: topic,
-    data: TYPES.map(t => topicPct(groups[t], topic)),
-    backgroundColor: TOPIC_COLORS[topic] ?? '#aaa',
-  }))
+  // Daten alle 8 Themen pro Typ
+  const topicsByType = TYPES.map(t => ALL_TOPICS.map(topic => topicPct(groups[t], topic)))
 
-  // Chart 3 (optional): alle 8 Themen pro Anbieter
-  const topicByProvDs = ALL_TOPICS.map(topic => ({
-    label: topic,
-    data: PROVIDERS_ORDER.map(n => topicPct(provGrps[n], topic)),
-    backgroundColor: TOPIC_COLORS[topic] ?? '#aaa',
-  }))
-  const provColors = PROVIDERS_ORDER.map(n => TYPE_COLORS[PROVIDER_TYPE_MAP[n]] ?? '#aaa')
+  // Daten alle 8 Themen pro Anbieter
+  const topicsByProv = PROVIDERS_ORDER.map(n => ALL_TOPICS.map(topic => topicPct(provGrps[n], topic)))
 
-  const stackOpts = useMemo(() => barOptions({ yMin: 0, yMax: 100, yLabel: 'Anteil (%)', stacked: true }), [theme])
+  const readingHelp1 = 'Blau = Hard News, Rot = Soft News. Je grösser der rote Anteil bei Boulevard, desto mehr spricht das für H3.'
+  const readingHelp2 = 'Blautöne = Hard News, Orange/Rottöne = Soft News. Grosse warme Flächen bei Boulevard sprechen für H3.'
+  const readingHelp3 = 'Gleiche Farblogik wie oben, aufgeteilt auf die 7 Anbieter.'
 
   return (
     <div>
@@ -80,25 +82,56 @@ export default function AnalysisH3({ posts }) {
       <PlatformFilter value={platform} onChange={setPlatform} />
       <p className="text-muted" style={{ marginBottom: 20, fontSize: '.85rem' }}>n = {filtered.length} Beiträge</p>
 
+      {/* Chart 1: Hard vs. Soft pro Typ */}
       <ChartCard title="Hard News vs. Soft News pro Anbietertyp"
-        n={filtered.filter(p => p.topic).length} chartRef={ref1} filename="h3_hardsoft_typ"
-        readingHelp="Jeder Balken zeigt 100 %. Blau = Hard News, Rot = Soft News. Spricht für H3, wenn bei Boulevard der rote Anteil klar höher liegt.">
-        <Bar ref={ref1} data={{
-          labels: typeLabels,
-          datasets: [
-            { label: 'Hard News', data: hardPct, backgroundColor: '#2563eb' },
-            { label: 'Soft News', data: softPct, backgroundColor: '#e74c3c' },
-          ],
-        }} options={stackOpts} />
+        n={nTopics}
+        filename="h3_hardsoft_typ"
+        readingHelp={readingHelp1}
+        onDownload={() => downloadPieGroup({
+          canvases: typeRefs1.map(r => r.current?.canvas),
+          labels: TYPES.map(t => TYPE_LABELS[t]),
+          title: 'Hard News vs. Soft News pro Anbietertyp',
+          n: nTopics,
+          readingHelp: readingHelp1,
+          filename: 'h3_hardsoft_typ',
+        })}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {TYPES.map((t, i) => (
+            <div key={t} style={{ textAlign: 'center' }}>
+              <div style={{ fontWeight: 600, marginBottom: 8, fontSize: '.85rem' }}>{TYPE_LABELS[t]}</div>
+              <Pie ref={typeRefs1[i]} data={{
+                labels: ['Hard News', 'Soft News'],
+                datasets: [{ data: [hardPct[i], softPct[i]], backgroundColor: ['#2563eb', '#e74c3c'] }],
+              }} options={pOpts} />
+            </div>
+          ))}
+        </div>
       </ChartCard>
 
+      {/* Chart 2: alle 8 Themen pro Typ */}
       <ChartCard title="Alle 8 Themen pro Anbietertyp"
-        n={filtered.filter(p => p.topic).length} chartRef={ref2} filename="h3_themen_typ"
-        readingHelp="Blautöne = Hard News, Orange/Rottöne = Soft News. Je mehr warme Farben bei Boulevard, desto mehr Soft News.">
-        <Bar ref={ref2} data={{
-          labels: typeLabels,
-          datasets: topicDatasets,
-        }} options={stackOpts} />
+        n={nTopics}
+        filename="h3_themen_typ"
+        readingHelp={readingHelp2}
+        onDownload={() => downloadPieGroup({
+          canvases: typeRefs2.map(r => r.current?.canvas),
+          labels: TYPES.map(t => TYPE_LABELS[t]),
+          title: 'Alle 8 Themen pro Anbietertyp',
+          n: nTopics,
+          readingHelp: readingHelp2,
+          filename: 'h3_themen_typ',
+        })}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {TYPES.map((t, i) => (
+            <div key={t} style={{ textAlign: 'center' }}>
+              <div style={{ fontWeight: 600, marginBottom: 8, fontSize: '.85rem' }}>{TYPE_LABELS[t]}</div>
+              <Pie ref={typeRefs2[i]} data={{
+                labels: ALL_TOPICS,
+                datasets: [{ data: topicsByType[i], backgroundColor: ALL_TOPICS.map(tp => TOPIC_COLORS[tp] ?? '#aaa') }],
+              }} options={pOpts} />
+            </div>
+          ))}
+        </div>
       </ChartCard>
 
       <div style={{ marginBottom: 16 }}>
@@ -107,14 +140,31 @@ export default function AnalysisH3({ posts }) {
         </button>
       </div>
 
+      {/* Chart 3 (optional): alle 8 Themen pro Anbieter */}
       {showProv && (
         <ChartCard title="Alle 8 Themen pro Anbieter"
-          n={filtered.filter(p => p.topic).length} chartRef={ref3} filename="h3_themen_anbieter"
-          readingHelp="Gleiche Farblogik wie oben, aufgeteilt auf die 7 Anbieter.">
-          <Bar ref={ref3} data={{
+          n={nTopics}
+          filename="h3_themen_anbieter"
+          readingHelp={readingHelp3}
+          onDownload={() => downloadPieGroup({
+            canvases: provRefs.map(r => r.current?.canvas),
             labels: PROVIDERS_ORDER,
-            datasets: topicByProvDs,
-          }} options={stackOpts} />
+            title: 'Alle 8 Themen pro Anbieter',
+            n: nTopics,
+            readingHelp: readingHelp3,
+            filename: 'h3_themen_anbieter',
+          })}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+            {PROVIDERS_ORDER.map((n, i) => (
+              <div key={n} style={{ textAlign: 'center' }}>
+                <div style={{ fontWeight: 600, marginBottom: 8, fontSize: '.82rem' }}>{n}</div>
+                <Pie ref={provRefs[i]} data={{
+                  labels: ALL_TOPICS,
+                  datasets: [{ data: topicsByProv[i], backgroundColor: ALL_TOPICS.map(tp => TOPIC_COLORS[tp] ?? '#aaa') }],
+                }} options={pOpts} />
+              </div>
+            ))}
+          </div>
         </ChartCard>
       )}
 

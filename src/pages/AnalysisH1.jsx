@@ -61,7 +61,7 @@ export default function AnalysisH1({ posts }) {
 
       <ChartCard title="Ø Clickbait-Skala (C4) pro Anbietertyp"
         n={filtered.filter(p => p.c4 != null).length} chartRef={ref1} filename="h1_c4_typ"
-        readingHelp="C4-Skala: 1 = sachlich-informativer Titel bis 4 = reisserisch, übertriebenes Versprechen. Je höher der Balken, desto mehr Clickbait.">
+        readingHelp="C4-Skala: 1 = reisserisch (viel Clickbait) bis 4 = sachlich-informativer Titel. Je höher der Balken, desto weniger Clickbait.">
         <Bar ref={ref1} data={{
           labels: typeLabels,
           datasets: [{ label: 'Ø C4', data: c4ByType, backgroundColor: typeColors, borderWidth: 0 }],
@@ -70,7 +70,7 @@ export default function AnalysisH1({ posts }) {
 
       <ChartCard title="Ø Clickbait-Skala (C4) pro Anbieter"
         n={filtered.filter(p => p.c4 != null).length} chartRef={ref2} filename="h1_c4_anbieter"
-        readingHelp="Gleiche Skala wie oben, aufgeteilt nach den 7 Anbietern. Farben entsprechen dem Anbietertyp.">
+        readingHelp="Gleiche Skala wie oben (1 = reisserisch, 4 = sachlich), aufgeteilt nach den 7 Anbietern. Farben entsprechen dem Anbietertyp.">
         <Bar ref={ref2} data={{
           labels: PROVIDERS_ORDER,
           datasets: [{ label: 'Ø C4', data: c4ByProv, backgroundColor: provColors, borderWidth: 0 }],

@@ -36,16 +36,16 @@ export default function AnalysisH1({ posts }) {
   const c2 = TYPES.map(t => { const v = pctTrue(groups[t].map(p => p.c2)); return v !== null ? +v.toFixed(1) : null })
   const c3 = TYPES.map(t => { const v = pctTrue(groups[t].map(p => p.c3)); return v !== null ? +v.toFixed(1) : null })
 
-  const opts1 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Ø C4 (1–4)' }),
-    plugins: { ...barOptions().plugins, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
+  const opts1 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Ø C4 (1–4)' }, theme),
+    plugins: { ...barOptions({}, theme).plugins, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
   }), [theme])
 
-  const opts2 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Ø C4 (1–4)' }),
-    plugins: { ...barOptions().plugins, legend: { display: false },
+  const opts2 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Ø C4 (1–4)' }, theme),
+    plugins: { ...barOptions({}, theme).plugins, legend: { display: false },
       tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
   }), [theme])
 
-  const opts3 = useMemo(() => barOptions({ yMin: 0, yMax: 100, yLabel: 'Anteil Ja (%)' }), [theme])
+  const opts3 = useMemo(() => barOptions({ yMin: 0, yMax: 100, yLabel: 'Anteil Ja (%)' }, theme), [theme])
 
   return (
     <div>

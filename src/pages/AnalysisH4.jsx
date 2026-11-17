@@ -44,9 +44,9 @@ export default function AnalysisH4({ posts }) {
     return { v: mean(sub.map(p => +p.f_score)), n: sub.length }
   })
 
-  const opts1 = useMemo(() => scatterOptions({ xLabel: 'E4 (1=stark emotional, 4=nüchtern)', yLabel: 'W-Fragen-Wert (0–6)' }), [theme])
-  const opts2 = useMemo(() => ({ ...barOptions({ yMin: 0, yMax: 6, yLabel: 'Ø W-Fragen-Wert (0–6)' }),
-    plugins: { ...barOptions().plugins, legend: { display: false },
+  const opts1 = useMemo(() => scatterOptions({ xLabel: 'E4 (1=stark emotional, 4=nüchtern)', yLabel: 'W-Fragen-Wert (0–6)' }, theme), [theme])
+  const opts2 = useMemo(() => ({ ...barOptions({ yMin: 0, yMax: 6, yLabel: 'Ø W-Fragen-Wert (0–6)' }, theme),
+    plugins: { ...barOptions({}, theme).plugins, legend: { display: false },
       tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
   }), [theme])
 

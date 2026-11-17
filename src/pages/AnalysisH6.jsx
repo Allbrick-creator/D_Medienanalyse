@@ -54,11 +54,11 @@ export default function AnalysisH6({ posts }) {
     return { instagram: typeRange(meansI), tiktok: typeRange(meansT) }
   })
 
-  const opts14 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Mittelwert (1–4)' }),
-    plugins: { ...barOptions().plugins, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
+  const opts14 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Mittelwert (1–4)' }, theme),
+    plugins: { ...barOptions({}, theme).plugins, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
   }), [theme])
-  const opts3 = useMemo(() => ({ ...barOptions({ yMin: 0, yMax: 3, yLabel: 'Spannweite' }),
-    plugins: { ...barOptions().plugins, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
+  const opts3 = useMemo(() => ({ ...barOptions({ yMin: 0, yMax: 3, yLabel: 'Spannweite' }, theme),
+    plugins: { ...barOptions({}, theme).plugins, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
   }), [theme])
 
   const nI = { ...Object.fromEntries(TYPES.map(t => [TYPE_LABELS[t], instaGrps[t]])) }

@@ -46,11 +46,11 @@ export default function AnalysisH5({ posts }) {
   })
   const bothColors = PROVIDERS_ORDER.map(n => TYPE_COLORS[PROVIDER_TYPE_MAP[n]] ?? '#aaa')
 
-  const opts14 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Mittelwert (1–4)' }),
-    plugins: { ...barOptions().plugins, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
+  const opts14 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Mittelwert (1–4)' }, theme),
+    plugins: { ...barOptions({}, theme).plugins, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
   }), [theme])
-  const opts3 = useMemo(() => ({ ...barOptions({ yMin: 0, yMax: 100, yLabel: 'Anteil "beide" (%)' }),
-    plugins: { ...barOptions().plugins, legend: { display: false },
+  const opts3 = useMemo(() => ({ ...barOptions({ yMin: 0, yMax: 100, yLabel: 'Anteil "beide" (%)' }, theme),
+    plugins: { ...barOptions({}, theme).plugins, legend: { display: false },
       tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(1)} %` } } }
   }), [theme])
 

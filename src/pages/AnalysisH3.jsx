@@ -43,7 +43,7 @@ export default function AnalysisH3({ posts }) {
   const groups   = useMemo(() => byType(filtered), [filtered])
   const provGrps = useMemo(() => byProvider(filtered), [filtered])
 
-  const pOpts = useMemo(() => pieOptions(), [theme])
+  const pOpts = useMemo(() => pieOptions(theme), [theme])
 
   const nTopics = filtered.filter(p => p.topic).length
 

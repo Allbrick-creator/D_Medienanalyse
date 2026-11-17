@@ -15,8 +15,11 @@ ChartJS.register(
   Title, Tooltip, Legend,
 )
 
-// Aktuelle Theme-Farben aus CSS-Variablen lesen
-export function getChartColors() {
+// Theme-Farben – wenn theme='light'/'dark' übergeben wird, hardcoded Werte (kein CSS-Timing-Problem).
+// Ohne theme-Parameter: CSS-Variablen lesen (korrekt bei Klick-Zeitpunkt für Exporte).
+export function getChartColors(theme) {
+  if (theme === 'dark')  return { text: '#f9fafb', muted: '#9ca3af', grid: '#374151' }
+  if (theme === 'light') return { text: '#1a1a1a', muted: '#6b7280', grid: '#e5e7eb' }
   const s = getComputedStyle(document.documentElement)
   return {
     text:    s.getPropertyValue('--text').trim()       || '#1a1a1a',
@@ -26,8 +29,8 @@ export function getChartColors() {
 }
 
 // Basisoptionen für Balkendiagramme
-export function barOptions({ yMax, yMin = 0, yLabel = '', title = '', stacked = false, tooltipFmt } = {}) {
-  const c = getChartColors()
+export function barOptions({ yMax, yMin = 0, yLabel = '', title = '', stacked = false, tooltipFmt } = {}, theme) {
+  const c = getChartColors(theme)
   return {
     responsive: true,
     maintainAspectRatio: true,
@@ -59,8 +62,8 @@ export function barOptions({ yMax, yMin = 0, yLabel = '', title = '', stacked = 
 }
 
 // Basisoptionen für Kreisdiagramme
-export function pieOptions() {
-  const c = getChartColors()
+export function pieOptions(theme) {
+  const c = getChartColors(theme)
   return {
     responsive: true,
     maintainAspectRatio: true,
@@ -77,8 +80,8 @@ export function pieOptions() {
 }
 
 // Basisoptionen für Streudiagramme
-export function scatterOptions({ xLabel = '', yLabel = '' } = {}) {
-  const c = getChartColors()
+export function scatterOptions({ xLabel = '', yLabel = '' } = {}, theme) {
+  const c = getChartColors(theme)
   return {
     responsive: true,
     maintainAspectRatio: true,

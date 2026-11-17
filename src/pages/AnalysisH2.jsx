@@ -39,16 +39,16 @@ export default function AnalysisH2({ posts }) {
   })
   const d3n = TYPES.map(t => groups[t].filter(p => p.d3 === 'nicht_relevant').length)
 
-  const opts14 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Ø D4 (1 = einseitig, 4 = neutral)' }),
-    plugins: { ...barOptions().plugins, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
+  const opts14 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Ø D4 (1 = einseitig, 4 = neutral)' }, theme),
+    plugins: { ...barOptions({}, theme).plugins, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
   }), [theme])
 
-  const opts2 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Ø D4' }),
-    plugins: { ...barOptions().plugins, legend: { display: false },
+  const opts2 = useMemo(() => ({ ...barOptions({ yMin: 1, yMax: 4, yLabel: 'Ø D4' }, theme),
+    plugins: { ...barOptions({}, theme).plugins, legend: { display: false },
       tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y?.toFixed(2)}` } } }
   }), [theme])
 
-  const opts3 = useMemo(() => barOptions({ yMin: 0, yMax: 100, yLabel: 'Anteil Ja (%)' }), [theme])
+  const opts3 = useMemo(() => barOptions({ yMin: 0, yMax: 100, yLabel: 'Anteil Ja (%)' }, theme), [theme])
 
   return (
     <div>
